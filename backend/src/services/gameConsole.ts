@@ -1,6 +1,8 @@
 import type { GameServerRow } from '../types/gameServer.js';
 import { sendLinuxGsmConsoleCommand } from '../providers/linuxgsm/console.js';
 import { sendOvhcloudConsoleCommand } from '../providers/ovhcloud/console.js';
+import { isCurseForgeServer } from '../providers/external/curseforgeRuntime.js';
+import { execInContainer } from '../utils/docker.js';
 
 export type GameConsoleCommandResult = {
     ok: boolean;
@@ -35,6 +37,10 @@ export async function sendGameConsoleCommand(
     rawCommand: unknown
 ): Promise<GameConsoleCommandResult> {
     const command = normalizeCommand(rawCommand);
+    if (isCurseForgeServer(server)) {
+        const result = await execInContainer(server.docker_container_id, ['rcon-cli', command], { user: '1000', workdir: '/data' });
+        return { ...result, ok: result.exitCode === 0 };
+    }
 
     if (server.provider === 'linuxgsm') {
         return sendLinuxGsmConsoleCommand(server, command);

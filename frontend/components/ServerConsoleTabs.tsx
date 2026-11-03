@@ -415,8 +415,7 @@ export function ServerConsoleTabs({
     if (!activeTab || !commandValue.trim() || commandSending) return;
     // External images have no console script and some games expose no command interface at
     // all — the backend returns 501, so never call it.
-    if (activeServer?.provider === 'external') return;
-    if (!supportsConsoleCommand(activeServer?.providerMetadataJson)) return;
+    if (!supportsConsoleCommand(activeServer?.providerMetadataJson, activeServer?.provider)) return;
     const cmd = commandValue.trim();
     setCommandHistory((prev) => [cmd, ...prev].slice(0, 100));
     setHistoryIndex(-1);
@@ -791,10 +790,10 @@ export function ServerConsoleTabs({
                 const canSend = canSendCommandByServer?.[activeServer.id] ?? false;
                 const isStopped = isServerDownLike(activeServer.status);
                 const isExternal = activeServer.provider === 'external';
-                const hasConsole = supportsConsoleCommand(activeServer.providerMetadataJson);
-                const noConsole = isExternal || !hasConsole;
+                const hasConsole = supportsConsoleCommand(activeServer.providerMetadataJson, activeServer.provider);
+                const noConsole = !hasConsole;
                 const isInputDisabled = commandSending || !canSend || isStopped || noConsole;
-                const inputPlaceholder = isExternal
+                const inputPlaceholder = isExternal && !hasConsole
                   ? 'Console commands are not available for custom (external) images.'
                   : !hasConsole
                   ? 'This game has no console — it exposes no command interface.'

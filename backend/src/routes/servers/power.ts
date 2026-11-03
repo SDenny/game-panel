@@ -28,6 +28,7 @@ import { sendRouteError } from '../../utils/routeErrors.js';
 import { PERMISSIONS } from '../../permissions.js';
 import type { GameServerRow } from '../../types/gameServer.js';
 import { assertCanPowerServer } from '../../services/serverActionPolicy.js';
+import { resumeCurseForgeTracking } from '../../services/curseforgeInstall.js';
 import {
     completeDockerPowerTransition,
     parseServerId,
@@ -92,6 +93,7 @@ export function createServerPowerRoutes(): Router {
                 }
 
                 await completeDockerPowerTransition(serverId);
+                void resumeCurseForgeTracking(serverId).catch(error => logError('CURSEFORGE:RESUME', error, { serverId }));
 
                 await actionsRepository.create(
                     serverId,
@@ -207,6 +209,7 @@ export function createServerPowerRoutes(): Router {
                 }
 
                 await completeDockerPowerTransition(serverId);
+                void resumeCurseForgeTracking(serverId).catch(error => logError('CURSEFORGE:RESUME', error, { serverId }));
 
                 await actionsRepository.create(
                     serverId,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useBodyScrollLock } from '../src/ui/utils/useBodyScrollLock';
 import { AlertTriangle, ArrowLeft, ArrowRight, ChevronDown, Eye, EyeOff, Package, Plus, Search, Settings2, Trash2, X } from 'lucide-react';
 import { InstallationProgressModal } from './InstallationProgressModal';
+import { CurseForgeModpacks } from './CurseForgeModpacks';
 import type { InstallGameHandlerPayload } from './app/appActionHandlers';
 import type { InstallInteraction, InstallStep } from '../types/gameServer';
 import { minecraftJavaVariants, type OvhcloudImage } from '../utils/ovhcloudCatalog';
@@ -989,6 +990,8 @@ export function InstallGameServer({
 
   const [unifiedSearch, setUnifiedSearch] = useState('');
   const [showExternal, setShowExternal] = useState(false);
+  const [showModpacks, setShowModpacks] = useState(false);
+  const [installWasModpack, setInstallWasModpack] = useState(false);
   const [installWasExternal, setInstallWasExternal] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [versionModalImages, setVersionModalImages] = useState<OvhcloudImage[]>([]);
@@ -1245,6 +1248,7 @@ export function InstallGameServer({
       resourceLimits: (cpuVal > 0 || memVal > 0) ? { cpu: cpuVal > 0 ? cpuVal : 0, memoryMb: memVal > 0 ? memVal : 0 } : null,
     };
     setInstallWasExternal(false);
+    setInstallWasModpack(false);
     setInstallingName(uniqueName);
     setShowConfig(false);
     setShowInstallModal(true);
@@ -1285,6 +1289,7 @@ export function InstallGameServer({
       resourceLimits: (extCpuVal > 0 || extMemVal > 0) ? { cpu: extCpuVal > 0 ? extCpuVal : 0, memoryMb: extMemVal > 0 ? extMemVal : 0 } : null,
     };
     setInstallWasExternal(true);
+    setInstallWasModpack(false);
     setInstallingName(uniqueExtName);
     setShowInstallModal(true);
     onClose();
@@ -1317,6 +1322,7 @@ export function InstallGameServer({
     onClose();
     onClearError?.();
     setShowExternal(false);
+    setShowModpacks(false);
     setUnifiedSearch('');
   };
 
@@ -1347,10 +1353,31 @@ export function InstallGameServer({
 
             <div className="flex-1 flex flex-col overflow-hidden">
 
-              {!showExternal && (
+              {showModpacks && (
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <CurseForgeModpacks
+                    canInstall={canInstall}
+                    usedPorts={usedPorts}
+                    usedServerNames={usedServerNames}
+                    onBack={() => setShowModpacks(false)}
+                    onInstall={async payload => {
+                      setInstallWasModpack(true);
+                      setInstallWasExternal(false);
+                      setInstallingName(payload.name);
+                      setShowInstallModal(true);
+                      onClose();
+                      await onInstall(payload);
+                    }}
+                  />
+                </div>
+              )}
+              {!showExternal && !showModpacks && (
                 <div className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
                   <div className="space-y-4">
 
+                    <AppButton tone="secondary" fullWidth disabled={!canInstall} onClick={() => setShowModpacks(true)}>
+                      <Package className="mr-2 h-4 w-4" /> Browse Minecraft modpacks on CurseForge
+                    </AppButton>
                     <div className="flex gap-3 items-stretch">
                       <div className="relative flex-1">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -1749,6 +1776,12 @@ export function InstallGameServer({
         onOpenConsole={(serverId) => onOpenConsole?.(serverId)}
         onRetryInstall={() => {
           setShowInstallModal(false);
+          if (installWasModpack) {
+            setShowModpacks(true);
+            setShowExternal(false);
+            onReopen?.();
+            return;
+          }
           const usedTcp = new Set(usedPorts?.tcp ?? []);
           const usedUdp = new Set(usedPorts?.udp ?? []);
           const allocatedTcp = new Set<number>();

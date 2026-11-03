@@ -322,6 +322,7 @@ class ApiClient {
   }
 
   async installServer(payload: {
+    modpack?: import('../types/curseforge').ModpackInstallSelection;
     provider: 'ovhcloud' | 'linuxgsm' | 'external';
     name: string;
     shortname?: string;
@@ -350,6 +351,24 @@ class ApiClient {
   async respondToInstallInteraction(serverId: number, interactionId: number, response: Record<string, unknown>) {
     const res = await this.client.post(`/api/servers/${serverId}/install/interactions/${interactionId}/respond`, response);
     return res.data;
+  }
+
+  async getCurseForgeStatus(signal?: AbortSignal) {
+    const response = await this.client.get('/api/catalog/curseforge/status', { signal });
+    return response.data as { configured: boolean };
+  }
+
+  async searchCurseForgeModpacks(params: { query: string; sort: string; offset: number }, signal?: AbortSignal) {
+    const response = await this.client.get('/api/catalog/curseforge/modpacks', { params, signal });
+    return response.data as import('../types/curseforge').CatalogPage<import('../types/curseforge').CurseForgePack>;
+  }
+
+  async getCurseForgeVersions(projectId: number, offset: number, signal?: AbortSignal) {
+    const response = await this.client.get('/api/catalog/curseforge/modpacks/' + projectId + '/versions', { params: { offset }, signal });
+    return response.data as {
+      pack: import('../types/curseforge').CurseForgePack;
+      versions: import('../types/curseforge').CatalogPage<import('../types/curseforge').CurseForgeVersion>;
+    };
   }
 
   async getNews(limit?: number) {

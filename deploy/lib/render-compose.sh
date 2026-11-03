@@ -131,6 +131,7 @@ services:
       APP_INSTANCE_SECRET: "${APP_INSTANCE_SECRET}"
       TELEMETRY_ENABLED: "${TELEMETRY_ENABLED}"
       TELEMETRY_API_BASE_URL: "${TELEMETRY_API_BASE_URL}"
+      CURSEFORGE_API_KEY_FILE: "${CURSEFORGE_API_KEY_FILE:-/data/curseforge-api-key}"
     volumes:
       - "../data:/data"
       - "/var/run/docker.sock:/var/run/docker.sock"

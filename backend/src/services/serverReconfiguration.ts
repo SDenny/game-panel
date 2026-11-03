@@ -22,6 +22,7 @@ import {
     POWER_TRANSITION_TIMEOUT_MS,
 } from './serverTransitions.js';
 import { getServerOrThrow } from './servers.js';
+import { withCurseForgeCredentials } from '../providers/external/curseforgeRuntime.js';
 import {
     getServerRestartPolicy,
     getServerStopTimeoutSeconds,
@@ -248,7 +249,7 @@ export async function reconfigureServerContainer(
                 provider: server.provider,
                 catalogId: server.catalog_id,
                 image: image.image,
-                env: nextEnv,
+                env: await withCurseForgeCredentials(server.provider, server.catalog_id, image.image, nextEnv),
                 mounts: resolvedMounts,
                 ports: nextPorts,
                 healthcheck: nextHealthcheck,

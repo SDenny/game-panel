@@ -15,6 +15,8 @@ import {
 } from './serverTransitions.js';
 import { sendGameInstalledTelemetry, sendGameUninstalledTelemetry } from './telemetry.js';
 import type { ResolvedInstallSpec } from '../providers/installTypes.js';
+import { withCurseForgeCredentials } from '../providers/external/curseforgeRuntime.js';
+import { trackCurseForgeStartup } from './curseforgeInstall.js';
 import {
     beforeOvhcloudServerDelete,
     cleanupFailedOvhcloudInstallIfHandled,
@@ -121,12 +123,12 @@ export async function installServerAsync(
                 provider: spec.provider,
                 catalogId: spec.catalogId,
                 image: spec.dockerImage,
-                env: spec.env,
+                env: await withCurseForgeCredentials(spec.provider, spec.catalogId, spec.dockerImage, spec.env),
                 mounts: resolvedMounts,
                 ports: spec.ports,
                 healthcheck: spec.healthcheck,
                 resourceLimits: spec.resourceLimits,
-                restartPolicy: getOvhcloudInstallRestartPolicy(spec) ?? 'unless-stopped',
+                restartPolicy: spec.catalogId?.startsWith('curseforge:') ? 'no' : getOvhcloudInstallRestartPolicy(spec) ?? 'unless-stopped',
                 start: false,
             },
             serverId,
@@ -139,7 +141,7 @@ export async function installServerAsync(
         }
 
         await serverRepository.updateDockerInfo(serverId, containerInfo.id, containerInfo.name);
-        await installProgressRepository.update(serverId, 75, 'starting_container');
+        await installProgressRepository.update(serverId, 75, spec.catalogId?.startsWith('curseforge:') ? 'downloading_server_files' : 'starting_container');
         try {
             await dockerUtils.startContainer(containerInfo.id);
         } catch (error) {
@@ -159,10 +161,11 @@ export async function installServerAsync(
         await assertServerExistsDuringInstall(serverId);
         const runtime = await dockerUtils.inspectContainerRuntime(containerInfo.id);
         await serverRepository.updateRuntimeState(serverId, runtime);
-        await completeInstallStatus({
-            serverId,
-            healthcheckDefined: containerInfo.healthcheckDefined,
-        });
+        if (spec.provider === 'external' && spec.catalogId?.startsWith('curseforge:')) {
+            await trackCurseForgeStartup(serverId, containerInfo.id);
+        } else {
+            await completeInstallStatus({ serverId, healthcheckDefined: containerInfo.healthcheckDefined });
+        }
 
         if (spec.provider === 'linuxgsm') {
             await assertServerExistsDuringInstall(serverId);

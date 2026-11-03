@@ -16,9 +16,9 @@ function readCapabilities(metadataJson: string | null | undefined): ProviderCapa
   }
 }
 
-export function supportsConsoleCommand(metadataJson: string | null | undefined): boolean {
+export function supportsConsoleCommand(metadataJson: string | null | undefined, provider?: string): boolean {
   const capabilities = readCapabilities(metadataJson);
-  return capabilities ? Boolean(capabilities.consoleCommand) : true;
+  return capabilities ? Boolean(capabilities.consoleCommand) : provider !== 'external';
 }
 
 export function supportsBackupCreate(metadataJson: string | null | undefined): boolean {

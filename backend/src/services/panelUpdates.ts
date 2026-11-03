@@ -6,7 +6,11 @@ import { getConfig } from '../config.js';
 import { logError } from '../utils/logger.js';
 import { toIsoTimestamp, toIsoTimestampOrNull } from '../utils/time.js';
 
-const GITHUB_RELEASES_URL = 'https://api.github.com/repos/ovh/game-panel/releases?per_page=100';
+function releasesUrl(): string {
+  const repository = /^https:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+?)(?:\.git)?\/?$/.exec(getConfig().repositoryUrl);
+  if (!repository) throw new Error('Panel updates require a GitHub repository URL');
+  return 'https://api.github.com/repos/' + repository[1] + '/' + repository[2] + '/releases?per_page=100';
+}
 const RELEASES_CACHE_TTL_MS = 10 * 60 * 1000;
 const VERSION_RE = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
 
@@ -127,7 +131,8 @@ async function fetchReleaseNotes(): Promise<PanelReleaseNotes[]> {
     return releasesCache.releases;
   }
 
-  const response = await fetch(GITHUB_RELEASES_URL, {
+  const response = await fetch(releasesUrl(), {
+    signal: AbortSignal.timeout(15_000),
     headers: {
       Accept: 'application/vnd.github+json',
       'User-Agent': 'GamePanel-Updater',

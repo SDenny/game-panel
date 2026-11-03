@@ -14,6 +14,7 @@ import serverMembersRoutes from './routes/serverMembers.js';
 import serverRoutes from './routes/servers.js';
 import systemRoutes from './routes/system.js';
 import catalogRoutes from './routes/catalog.js';
+import curseforgeRoutes from './routes/curseforge.js';
 import downloadRoutes from './routes/download.js';
 import { setupWebSocket } from './websocket/handler.js';
 import { getAppVersion } from './utils/appInfo.js';
@@ -25,6 +26,7 @@ import { startDownloadTokenCleanupJob } from './services/downloadTokens.js';
 import { startScheduledTaskRunner } from './services/scheduledTasks.js';
 import { reconcileStalePanelUpdate } from './services/panelUpdates.js';
 import { nowIso } from './utils/time.js';
+import { resumeInterruptedCurseForgeInstalls } from './services/curseforgeInstall.js';
 
 const { port, frontendUrl, trustProxy } = getConfig();
 const API_BODY_LIMIT = '2mb';
@@ -94,6 +96,7 @@ app.use('/api/servers', authMiddleware, serverMembersRoutes);
 app.use('/api/servers', authMiddleware, serverRoutes);
 // /api/catalog
 app.use('/api/catalog', authMiddleware, catalogRoutes);
+app.use('/api/catalog/curseforge', authMiddleware, curseforgeRoutes);
 // /api/system
 app.use('/api/system', authMiddleware, systemRoutes);
 
@@ -133,6 +136,7 @@ async function startServer(): Promise<void> {
 
     // Sync current Docker health -> DB once at boot
     await reconcileDockerHealthToDb();
+    await resumeInterruptedCurseForgeInstalls();
 
     // Make sure the games network exists and every game container sits on it
     await reconcileGamesNetwork().catch((error) => {

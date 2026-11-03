@@ -28,6 +28,12 @@ export const STANDARD_INSTALL_STEPS: InstallStep[] = [
 ];
 
 export function getInstallStepsForServer(server: GameServerRow): InstallStep[] {
+    if (server.provider === 'external' && server.catalog_id?.startsWith('curseforge:')) {
+        return [...STANDARD_INSTALL_STEPS.filter(step => step.key !== 'starting_container'),
+            { key: 'downloading_server_files', optional: false },
+            { key: 'starting_container', optional: false },
+        ];
+    }
     if (server.provider === 'ovhcloud') {
         return getOvhcloudServerAdapter(server).installSteps ?? STANDARD_INSTALL_STEPS;
     }

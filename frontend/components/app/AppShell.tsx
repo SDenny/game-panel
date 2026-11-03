@@ -159,7 +159,7 @@ export function AppShell({
     const perms = serverPermissionsById[server.id] ?? [];
     const permitted =
       Boolean(currentUser?.isRoot) || perms.includes('*') || perms.includes('server.command.send');
-    canSendCommandByServer[server.id] = permitted && supportsConsoleCommand(server.providerMetadataJson);
+    canSendCommandByServer[server.id] = permitted && supportsConsoleCommand(server.providerMetadataJson, server.provider);
   }
 
   const handleSendConsoleCommand = async (serverId: string, command: string) => {

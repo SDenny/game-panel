@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { CLIMessage } from '../../types/cli';
 import type { GameServer } from '../../types/gameServer';
+import type { ModpackInstallSelection } from '../../types/curseforge';
 import { apiClient } from '../../utils/api';
 import { isServerUpLike, isServerDownLike } from '../../utils/serverRuntime';
 import { nextId } from '../../utils/uid';
@@ -16,6 +17,7 @@ type CanAccessServer = (serverId: string | number, permission: string) => boolea
 type ResolveServerName = (serverId: number | string, fallback?: string) => string;
 
 export interface InstallGameHandlerPayload {
+  modpack?: ModpackInstallSelection;
   provider: 'ovhcloud' | 'linuxgsm' | 'external';
   name: string;
   shortname?: string;
