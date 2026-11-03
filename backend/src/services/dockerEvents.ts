@@ -3,6 +3,7 @@ import { serverRepository } from '../database/index.js';
 import type { ServerStatus } from '../types/gameServer.js';
 import { inspectContainerRuntime } from '../utils/docker.js';
 import {
+    clearServerTransition,
     completeServerTransition,
     mapDockerHealthToServerStatus,
     shouldIgnoreDockerHealthStatus,
@@ -49,6 +50,12 @@ async function applyDockerContainerState(serverId: number, containerId: string):
 
     if (state !== 'running') {
         await afterOvhcloudServerStopped(serverId, current).catch(() => undefined);
+        // A failed install's container exits right after the failure is recorded;
+        // keep the failure and its message instead of reporting a plain stop.
+        if (current.status === 'failed') {
+            clearServerTransition(serverId);
+            return;
+        }
         await completeServerTransition(serverId, 'stopped');
         return;
     }

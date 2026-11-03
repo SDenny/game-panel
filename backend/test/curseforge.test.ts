@@ -146,6 +146,10 @@ test('install spec pins the selected release and creates only server-local mount
     assert.ok(spec.env.includes('CF_FILE_ID=4612979'));
     assert.ok(spec.env.includes('MEMORY=4608M'));
     assert.ok(spec.env.includes('VERSION=1.12.2'));
+    assert.deepEqual(spec.healthcheck, {
+        mode: 'override', probe: { type: 'command', command: ['mc-health'] },
+        intervalSeconds: 15, timeoutSeconds: 10, startPeriodSeconds: 1800, retries: 3,
+    });
     assert.deepEqual(spec.mounts, [{ key: 'data', containerPath: '/data' }, { key: 'downloads', containerPath: '/downloads' }]);
     assert.equal(JSON.stringify(spec).includes('fixture-key'), false);
     assert.equal(spec.env.some(value => value.startsWith('CF_API_KEY=')), false);

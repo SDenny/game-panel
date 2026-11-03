@@ -31,7 +31,12 @@ export async function resolveCurseForgeInstallSpec(
         catalogId: 'curseforge:' + pack.id,
         dockerImage: 'itzg/minecraft-server:java' + java,
         ports: ctx.ports,
-        healthcheck: null,
+        // Explicit so readiness never depends on the image keeping its default check;
+        // the long start period covers first-run mod downloads.
+        healthcheck: {
+            mode: 'override', probe: { type: 'command', command: ['mc-health'] },
+            intervalSeconds: 15, timeoutSeconds: 10, startPeriodSeconds: 1800, retries: 3,
+        },
         resourceLimits: ctx.resourceLimits,
         mounts: [{ key: 'data', containerPath: '/data' }, { key: 'downloads', containerPath: '/downloads' }],
         env: [
