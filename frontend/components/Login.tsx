@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Lock, User, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Gamepad2, Lock, User, AlertCircle } from 'lucide-react';
 import { apiClient } from '../utils/api';
 
 interface LoginProps {
@@ -55,151 +55,138 @@ export function Login({ onLogin }: LoginProps) {
     }
   };
 
+  const inputClass = `w-full rounded-lg border py-2.5 pl-9 text-sm text-[#f1f0ff] placeholder:text-[#8280ad] transition-[border-color,box-shadow] focus:outline-none ${
+    showError
+      ? 'border-[#b9383f] bg-[#2a1220] focus:shadow-[0_0_0_3px_rgba(185,56,63,0.25)]'
+      : 'border-[#3a3978] bg-[#131232] focus:border-[#5b4ff0] focus:shadow-[0_0_0_3px_rgba(91,79,240,0.25)]'
+  }`;
+
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: 'linear-gradient(135deg, #000e9c 0%, #002dbe 100%)' }}
-    >
-      <div className="w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center gap-3">
-          <img
-            src="/OVHcloud_Game_Panel_Logo.png"
-            alt="OVHcloud Game Panel"
-            className="h-14 w-auto object-contain"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
-            Sign in to manage your game servers
-          </p>
+    <div className="flex min-h-screen bg-[#0e0d24] p-0 lg:p-4">
+      <div className="flex w-full flex-col justify-between px-6 py-8 sm:px-12 lg:w-[44%] lg:max-w-[560px]">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#5b4ff0] text-[#ffffff]">
+            <Gamepad2 className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="text-[15px] font-bold text-[#f1f0ff]">Game Panel</span>
         </div>
 
-        <div
-          className="overflow-hidden rounded-2xl shadow-2xl"
-          style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <div className="bg-white px-8 py-8">
-            <form onSubmit={handleCredentialsSubmit} className="space-y-5">
-              {showError && (
-                <div
-                  className="flex items-start gap-3 rounded-lg p-3"
-                  style={{ background: '#fff5f5', border: '1px solid #fecaca' }}
+        <div className="mx-auto w-full max-w-sm py-10">
+          <h1 className="text-2xl font-bold tracking-tight text-[#f1f0ff]">Welcome back</h1>
+          <p className="mt-1 text-sm text-[#9d9bc6]">Sign in to manage your game servers.</p>
+
+          <form onSubmit={handleCredentialsSubmit} className="mt-8 space-y-5">
+            {showError && (
+              <div className="flex items-start gap-3 rounded-lg border border-[#b9383f]/60 bg-[#2a1220] p-3" role="alert">
+                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#f0a3a7]" />
+                <div>
+                  <p className="text-sm font-semibold text-[#fbd5d7]">{errorTitle}</p>
+                  <p className="mt-0.5 text-sm text-[#f0a3a7]">{errorMessage}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label htmlFor="username" className="block text-sm font-medium text-[#c9c8e6]">
+                Username
+              </label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <User className="h-4 w-4 text-[#8280ad]" />
+                </div>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  placeholder="Enter your username"
+                  autoComplete="username"
+                  className={`${inputClass} pr-4`}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-[#c9c8e6]">
+                Password
+              </label>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <Lock className="h-4 w-4 text-[#8280ad]" />
+                </div>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className={`${inputClass} pr-10`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center border-none bg-transparent pr-3 text-[#8280ad] transition-colors hover:text-[#8b84ff]"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" style={{ color: '#ef4444' }} />
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: '#991b1b' }}>{errorTitle}</p>
-                    <p className="mt-0.5 text-sm" style={{ color: '#b91c1c' }}>{errorMessage}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <label htmlFor="username" className="block text-sm font-medium" style={{ color: '#1e293b' }}>
-                  Username
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <User className="h-4 w-4" style={{ color: '#94a3b8' }} />
-                  </div>
-                  <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    placeholder="Enter your username"
-                    autoComplete="username"
-                    className="w-full rounded-lg py-2.5 pl-9 pr-4 text-sm transition-all focus:outline-none"
-                    style={{
-                      background: showError ? '#fff5f5' : '#f8fafc',
-                      border: `1px solid ${showError ? '#fca5a5' : '#cbd5e1'}`,
-                      color: '#0f172a',
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = showError ? '#f87171' : '#0050d7';
-                      e.currentTarget.style.boxShadow = showError
-                        ? '0 0 0 3px rgba(239,68,68,0.12)'
-                        : '0 0 0 3px rgba(0,80,215,0.12)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = showError ? '#fca5a5' : '#cbd5e1';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  />
-                </div>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
+            </div>
 
-              <div className="space-y-1.5">
-                <label htmlFor="password" className="block text-sm font-medium" style={{ color: '#1e293b' }}>
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Lock className="h-4 w-4" style={{ color: '#94a3b8' }} />
-                  </div>
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={handlePasswordChange}
-                    placeholder="Enter your password"
-                    autoComplete="current-password"
-                    className="w-full rounded-lg py-2.5 pl-9 pr-10 text-sm transition-all focus:outline-none"
-                    style={{
-                      background: showError ? '#fff5f5' : '#f8fafc',
-                      border: `1px solid ${showError ? '#fca5a5' : '#cbd5e1'}`,
-                      color: '#0f172a',
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = showError ? '#f87171' : '#0050d7';
-                      e.currentTarget.style.boxShadow = showError
-                        ? '0 0 0 3px rgba(239,68,68,0.12)'
-                        : '0 0 0 3px rgba(0,80,215,0.12)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = showError ? '#fca5a5' : '#cbd5e1';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors"
-                    style={{ color: '#94a3b8', background: 'transparent', border: 'none' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#0050d7')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-2 w-full rounded-lg py-2.5 text-sm font-semibold transition-all"
-                style={{
-                  background: loading ? '#94a3b8' : 'linear-gradient(135deg, #003cbd 0%, #0050d7 100%)',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  border: 'none',
-                  boxShadow: loading ? 'none' : '0 2px 8px rgba(0,80,215,0.30)',
-                  color: '#ffffff',
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) e.currentTarget.style.background = 'linear-gradient(135deg, #002fa3 0%, #003cbd 100%)';
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) e.currentTarget.style.background = 'linear-gradient(135deg, #003cbd 0%, #0050d7 100%)';
-                }}
-              >
-                {loading ? 'Signing in…' : 'Sign In'}
-              </button>
-            </form>
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`mt-2 w-full rounded-lg border-none py-2.5 text-sm font-semibold text-[#ffffff] transition-colors ${
+                loading
+                  ? 'cursor-not-allowed bg-[#3a3978]'
+                  : 'cursor-pointer bg-[#5b4ff0] shadow-[0_6px_20px_rgba(91,79,240,0.35)] hover:bg-[#6a5ff5]'
+              }`}
+            >
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
         </div>
 
-        <p className="mt-6 text-center text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          © 2026 OVHcloud. All rights reserved.
-        </p>
+        <p className="text-center text-xs text-[#6b6994]">© 2026 OVHcloud. All rights reserved.</p>
+      </div>
+
+      <div aria-hidden="true" className="relative hidden flex-1 overflow-hidden rounded-2xl lg:block">
+        <LoginArtwork />
       </div>
     </div>
+  );
+}
+
+/** Original layered-wave artwork for the login screen. */
+function LoginArtwork() {
+  return (
+    <svg className="absolute inset-0 h-full w-full" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="gp-login-bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#2a1f8f" />
+          <stop offset="55%" stopColor="#1b1563" />
+          <stop offset="100%" stopColor="#100c3d" />
+        </linearGradient>
+        <radialGradient id="gp-login-glow" cx="0.78" cy="0.12" r="0.7">
+          <stop offset="0%" stopColor="#8b84ff" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#8b84ff" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="gp-login-wave-a" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#6a5ff5" />
+          <stop offset="100%" stopColor="#4c40de" />
+        </linearGradient>
+        <linearGradient id="gp-login-wave-b" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#a29bff" />
+          <stop offset="100%" stopColor="#6a5ff5" />
+        </linearGradient>
+      </defs>
+      <rect width="800" height="900" fill="url(#gp-login-bg)" />
+      <rect width="800" height="900" fill="url(#gp-login-glow)" />
+      <path d="M0 520 C 140 420, 260 600, 420 500 S 680 380, 800 460 L 800 900 L 0 900 Z" fill="url(#gp-login-wave-a)" opacity="0.55" />
+      <path d="M0 600 C 170 520, 300 700, 470 610 S 700 520, 800 580 L 800 900 L 0 900 Z" fill="url(#gp-login-wave-b)" opacity="0.5" />
+      <path d="M0 700 C 150 640, 320 780, 500 700 S 720 640, 800 690 L 800 900 L 0 900 Z" fill="#3a2fc4" opacity="0.75" />
+      <path d="M0 790 C 180 740, 360 850, 560 790 S 740 760, 800 780 L 800 900 L 0 900 Z" fill="#1b1563" opacity="0.85" />
+    </svg>
   );
 }

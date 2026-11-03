@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef } from 'react';
-import { Menu } from 'lucide-react';
+import { Gamepad2, Menu } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useFocusTrap } from '../../src/ui/utils/useFocusTrap';
 import { Sidebar } from '../Sidebar';
@@ -212,12 +212,12 @@ export function AppShell({
           >
             <Menu className={`w-6 h-6 ${isDark ? 'text-white' : 'text-white'}`} />
           </AppButton>
-          <img
-            src="/OVHcloud_Game_Panel_Logo.png"
-            alt="OVHcloud Game Panel"
-            draggable={false}
-            className="h-8 w-auto max-w-[70%] object-contain brightness-0 invert select-none"
-          />
+          <span className="flex select-none items-center gap-2.5">
+            <span className={`inline-flex h-8 w-8 items-center justify-center rounded-lg ${isDark ? 'bg-[var(--mn-accent)] text-white/95' : 'bg-white text-[#000e9c]'}`}>
+              <Gamepad2 className="h-[18px] w-[18px]" aria-hidden="true" />
+            </span>
+            <span className="text-[15px] font-bold text-white/95">Game Panel</span>
+          </span>
           <div className="w-10"></div>
         </div>
       </div>
@@ -255,7 +255,7 @@ export function AppShell({
         </>
       )}
 
-      <main className="flex-1 w-full overflow-x-hidden bg-transparent pt-16 md:pl-52 md:pt-0">
+      <main className="flex-1 w-full overflow-x-hidden bg-transparent pt-16 md:pl-60 md:pt-0">
         {activeTab === 'host-status' && (
           <AppPageLayout className={pageShellClassName}>
             <Suspense fallback={<div className="p-6 text-sm text-gray-400">Loading…</div>}>

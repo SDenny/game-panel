@@ -132,7 +132,6 @@ export const HostStatusView = memo(function HostStatusView({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const historyCurveColor = ODS_CHART_THEME.cpu;
-  const usageBarColor = ODS_CHART_THEME.progressCpu;
   const networkInColor  = isDark ? ODS_CHART_THEME.networkOut : '#7c3aed';
   const networkOutColor = isDark ? ODS_CHART_THEME.networkIn  : ODS_CHART_THEME.cpu;
   const networkHistoryInColor  = networkInColor;
@@ -141,53 +140,29 @@ export const HostStatusView = memo(function HostStatusView({
   return (
     <div className="space-y-3 md:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-6">
-        <AppCard className={`${cardBg} h-full rounded-lg p-4 md:p-6 border ${cardBorder} ${cardShadow}`}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Cpu className="w-5 h-5" style={{ color: ODS_CHART_THEME.cpu }} />
-              <span className={`${textSecondary} text-sm`}>CPU Usage</span>
+        {([
+          { label: 'CPU Usage', value: cpuUsage, Icon: Cpu, color: ODS_CHART_THEME.cpu },
+          { label: 'RAM Usage', value: ramUsage, Icon: Activity, color: ODS_CHART_THEME.ram },
+          { label: 'Disk Usage', value: diskUsagePercent, Icon: HardDrive, color: ODS_CHART_THEME.disk },
+        ] as const).map(({ label, value, Icon: TileIcon, color }) => (
+          <AppCard key={label} className={`${cardBg} h-full rounded-lg p-4 md:p-5 border ${cardBorder} ${cardShadow}`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <span className={`${textSecondary} block text-sm`}>{label}</span>
+                <span className={`mt-1 block text-3xl font-bold ${textPrimary}`}>{value}%</span>
+              </div>
+              <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[var(--gp-primary-500)] text-white/95 shadow-[0_6px_18px_rgba(40,30,160,0.35)]">
+                <TileIcon className="h-7 w-7" aria-hidden="true" />
+              </span>
             </div>
-          </div>
-          <div className={`text-3xl font-bold ${textPrimary} mb-2`}>{cpuUsage}%</div>
-          <div className={`h-1 ${progressBg} rounded-full overflow-hidden`}>
-            <div
-              className="h-full transition-all duration-300"
-              style={{ width: `${cpuUsage}%`, backgroundColor: usageBarColor }}
-            ></div>
-          </div>
-        </AppCard>
-
-        <AppCard className={`${cardBg} rounded-lg p-4 md:p-6 border ${cardBorder} ${cardShadow}`}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Activity className="w-5 h-5" style={{ color: ODS_CHART_THEME.ram }} />
-              <span className={`${textSecondary} text-sm`}>RAM Usage</span>
+            <div className={`mt-4 h-1 ${progressBg} rounded-full overflow-hidden`}>
+              <div
+                className="h-full transition-all duration-300"
+                style={{ width: `${value}%`, backgroundColor: color }}
+              ></div>
             </div>
-          </div>
-          <div className={`text-3xl font-bold ${textPrimary} mb-2`}>{ramUsage}%</div>
-          <div className={`h-1 ${progressBg} rounded-full overflow-hidden`}>
-            <div
-              className="h-full transition-all duration-300"
-              style={{ width: `${ramUsage}%`, backgroundColor: usageBarColor }}
-            ></div>
-          </div>
-        </AppCard>
-
-        <AppCard className={`${cardBg} rounded-lg p-4 md:p-6 border ${cardBorder} ${cardShadow}`}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <HardDrive className="w-5 h-5" style={{ color: ODS_CHART_THEME.disk }} />
-              <span className={`${textSecondary} text-sm`}>Disk Usage</span>
-            </div>
-          </div>
-          <div className={`text-3xl font-bold ${textPrimary} mb-2`}>{diskUsagePercent}%</div>
-          <div className={`h-1 ${progressBg} rounded-full overflow-hidden`}>
-            <div
-              className="h-full transition-all duration-300"
-              style={{ width: `${diskUsagePercent}%`, backgroundColor: usageBarColor }}
-            ></div>
-          </div>
-        </AppCard>
+          </AppCard>
+        ))}
 
         <AppCard className={`${cardBg} h-full rounded-lg p-4 md:p-6 border ${cardBorder} ${cardShadow}`}>
           <div className="flex items-center justify-between mb-3">

@@ -9,6 +9,8 @@ import '@ovhcloud/ods-themes/default/fonts';
 import './src/ui/theme/ods-dark.css';
 import './src/ui/theme/ods-light.css';
 import './styles/globals.css';
+import '@fontsource-variable/inter';
+import './src/ui/theme/midnight.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

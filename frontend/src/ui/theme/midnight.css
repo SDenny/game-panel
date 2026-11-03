@@ -1,0 +1,439 @@
+/*
+ * Midnight — the panel's dark skin: deep indigo surfaces, a violet accent, flat cards with
+ * hairline borders, and solid green / grey / red power actions.
+ *
+ * Everything here is scoped to `.dark` and left unlayered, so it wins over the layered base
+ * theme (src/ui/theme/ods-dark.css, globals.css) without touching light mode. Components
+ * keep their existing class names; this file re-points them at the palette below.
+ */
+
+/* Inter for both modes: tighter, more modern than the ODS default. */
+:root {
+  --ods-font-family-default: 'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-size: 15.5px;
+}
+
+html {
+  font-family: var(--ods-font-family-default);
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+.dark,
+.dark body {
+  /* ── Palette ── */
+  --mn-page: #0e0d24;
+  --mn-sidebar: #121130;
+  --mn-surface: #18173a;
+  --mn-surface-2: #1f1e47;
+  --mn-surface-3: #27265a;
+  --mn-input: #131232;
+  --mn-terminal: #0f0e28;
+  --mn-border: #29285a;
+  --mn-border-strong: #3a3978;
+  --mn-accent: #5b4ff0;
+  --mn-accent-hover: #6a5ff5;
+  --mn-accent-strong: #4c40de;
+  --mn-accent-text: #8b84ff;
+  --mn-accent-soft: rgba(91, 79, 240, 0.16);
+  --mn-accent-softer: rgba(91, 79, 240, 0.09);
+  --mn-heading: #f1f0ff;
+  --mn-text: #d6d5f0;
+  --mn-muted: #9d9bc6;
+  --mn-faint: #8280ad;
+  --mn-success: #3fa34d;
+  --mn-success-hover: #48b357;
+  --mn-danger: #b9383f;
+  --mn-danger-hover: #cc434a;
+  --mn-warning: #e0b13a;
+  --mn-radius: 0.75rem;
+
+  /* ── Tailwind scales, re-tinted so every gray/slate utility lands on the palette ── */
+  --color-gray-50: #f6f6fd;
+  --color-gray-100: #ecebfa;
+  --color-gray-200: #dddcf2;
+  --color-gray-300: #c9c8e6;
+  --color-gray-400: #9d9bc6;
+  --color-gray-500: #8280ad;
+  --color-gray-600: #4a4880;
+  --color-gray-700: #2c2b5e;
+  --color-gray-800: #1f1e47;
+  --color-gray-900: #16153a;
+  --color-gray-950: #0e0d24;
+  --color-slate-200: #dddcf2;
+  --color-slate-300: #c9c8e6;
+  --color-slate-400: #9d9bc6;
+  --color-slate-500: #8280ad;
+  --color-slate-600: #4a4880;
+  --color-slate-700: #2c2b5e;
+  --color-slate-800: #1f1e47;
+  --color-slate-900: #16153a;
+
+  /* The base theme uses cyan-400 as its accent (text, icons, tints); move it to violet. */
+  --color-cyan-400: var(--mn-accent-text);
+
+  /* Fills (active tabs, primary buttons) take the deeper accent so white text stays readable. */
+  --gp-primary-100: var(--mn-accent-hover);
+  --gp-primary-200: var(--mn-accent-hover);
+  --gp-primary-300: var(--mn-accent);
+  --gp-primary-400: #7d74ff;
+  --gp-primary-500: var(--mn-accent);
+  --gp-primary-600: var(--mn-accent-strong);
+  --gp-primary-700: #3a2fc4;
+  --gp-tab-active-text: #ffffff;
+  --gp-ods-accent-primary: var(--mn-accent);
+  --gp-ods-accent-secondary: var(--mn-accent-hover);
+
+  --gp-text-white: var(--mn-heading);
+  --gp-text-gray-100: #ecebfa;
+  --gp-text-gray-200: #dddcf2;
+  --gp-text-gray-300: #c9c8e6;
+  --gp-text-gray-400: var(--mn-muted);
+  --gp-text-gray-500: var(--mn-faint);
+  --gp-text-slate-200: #dddcf2;
+  --gp-text-slate-300: #c9c8e6;
+  --gp-text-slate-400: var(--mn-muted);
+
+  --background: var(--mn-page);
+  --foreground: var(--mn-text);
+  --card: var(--mn-surface);
+  --popover: var(--mn-surface);
+  --border: var(--mn-border);
+  --input: var(--mn-border);
+  --ring: var(--mn-accent);
+  --muted: var(--mn-surface-2);
+  --muted-foreground: var(--mn-muted);
+  --sidebar: var(--mn-sidebar);
+  --sidebar-primary: var(--mn-accent);
+  --sidebar-border: var(--mn-border);
+  --gp-global-gradient:
+    radial-gradient(ellipse 70% 55% at 85% -10%, rgba(91, 79, 240, 0.22) 0%, rgba(91, 79, 240, 0) 70%),
+    radial-gradient(ellipse 60% 50% at 0% 110%, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0) 70%);
+
+  /* ── Charts ── */
+  --gp-chart-cpu: #8b84ff;
+  --gp-chart-ram: #c084fc;
+  --gp-chart-disk: #60a5fa;
+  --gp-chart-network-in: #38bdf8;
+  --gp-chart-network-out: #a78bfa;
+  --gp-chart-tooltip-bg: rgba(24, 23, 58, 0.97);
+  --gp-chart-tooltip-border: rgba(91, 79, 240, 0.55);
+  --gp-chart-dot-fill: var(--mn-surface);
+
+  /* ── ODS design tokens ── */
+  --ods-theme-background-color: var(--mn-page);
+  --ods-theme-backdrop-background-color: #07061a;
+  --ods-theme-heading-text-color: var(--mn-heading);
+  --ods-theme-text-color: var(--mn-text);
+  --ods-theme-border-color-disabled: var(--mn-border);
+  --ods-theme-border-color-readonly: var(--mn-border);
+  --ods-theme-input-border-color: var(--mn-border-strong);
+  --ods-theme-input-border-color-hover: #4b4a8c;
+  --ods-theme-input-option-background-color-hover: var(--mn-surface-2);
+  --ods-theme-input-option-background-color-selected: var(--mn-accent-soft);
+  --ods-theme-input-option-background-color-selected-hover: rgba(91, 79, 240, 0.24);
+  --ods-theme-input-placeholder-text-color: var(--mn-faint);
+  --ods-theme-input-text-color: var(--mn-heading);
+  --ods-theme-input-text-color-checked: #ffffff;
+  --ods-theme-split-border-color: var(--mn-border);
+  --ods-color-form-element-background-default: var(--mn-input);
+  --ods-color-form-element-background-hover-default: var(--mn-input);
+  --ods-color-form-element-background-focus-default: var(--mn-input);
+  --ods-color-form-element-border-default: var(--mn-border-strong);
+  --ods-color-form-element-border-hover-default: #4b4a8c;
+  --ods-color-form-element-text-default: var(--mn-heading);
+  --ods-color-form-element-text-placeholder-default: var(--mn-faint);
+}
+
+/* Hard-coded surface colours in components, mapped onto the palette. */
+.dark .bg-\[\#111827\],
+.dark .bg-\[\#0f172a\],
+.dark .bg-\[\#0f1a2b\],
+.dark .bg-\[\#0d1524\],
+.dark .bg-\[\#101a2d\],
+.dark .bg-\[\#0b1728\],
+.dark .bg-\[\#0f1723\]\/60,
+.dark .dark\:bg-\[\#0f1723\]\/60,
+.dark .dark\:bg-\[\#0f1723\]\/40,
+.dark .dark\:bg-\[\#0f1723\]\/30 { background-color: var(--mn-surface); }
+.dark .bg-\[\#1f2937\],
+.dark .dark\:bg-\[\#1f2937\],
+.dark .bg-\[\#1a2332\] { background-color: var(--mn-surface-2); }
+.dark .bg-\[\#0f1723\],
+.dark .bg-\[\#1e293b\] { background-color: var(--mn-sidebar); }
+.dark .bg-\[\#27354b\] { background-color: var(--mn-surface-3); }
+.dark .bg-\[\#0b1220\],
+.dark .bg-\[\#0a0e1a\],
+.dark .bg-\[\#0d1117\] { background-color: var(--mn-input); }
+.dark .dark\:hover\:bg-\[\#0f1723\]\/50:hover,
+.dark .hover\:bg-\[\#1c2e47\]:hover,
+.dark .hover\:bg-\[\#27354b\]:hover { background-color: var(--mn-surface-3); }
+.dark .dark\:from-\[\#1f2937\] { --tw-gradient-from: var(--mn-surface-2); }
+.dark .dark\:to-\[\#111827\] { --tw-gradient-to: var(--mn-surface); }
+.dark .border-\[\#324666\] { border-color: var(--mn-border-strong); }
+.dark .dark\:ring-\[\#111827\] { --tw-ring-color: var(--mn-sidebar); }
+.dark .bg-\[linear-gradient\(180deg\,rgba\(9\,19\,35\,0\.98\)_0\%\,rgba\(6\,13\,25\,0\.98\)_100\%\)\] {
+  background-image: linear-gradient(180deg, rgba(31, 30, 71, 0.98) 0%, rgba(24, 23, 58, 0.98) 100%);
+}
+
+/* The base theme's blue (#0050D7 / #157EEA) is its primary action colour. */
+.dark .bg-\[\#0050D7\] { background-color: var(--mn-accent); }
+.dark .hover\:bg-\[\#003cbd\]:hover,
+.dark .hover\:bg-\[\#157EEA\]:hover { background-color: var(--mn-accent-hover); }
+.dark .bg-\[\#0050D7\]\/5,
+.dark .bg-\[\#0050D7\]\/10,
+.dark .bg-\[\#0050D7\]\/12 { background-color: var(--mn-accent-softer); }
+.dark .bg-\[\#0050D7\]\/15,
+.dark .bg-\[\#0050D7\]\/18,
+.dark .bg-\[\#0050D7\]\/20,
+.dark .hover\:bg-\[\#157EEA\]\/15:hover,
+.dark .hover\:bg-\[\#157EEA\]\/20:hover { background-color: var(--mn-accent-soft); }
+.dark .text-\[\#157EEA\] { color: var(--mn-accent-text); }
+.dark .hover\:border-\[\#157EEA\]\/60:hover,
+.dark .focus\:border-\[\#0050D5\]:focus { border-color: var(--mn-accent); }
+.dark .text-\[\#031126\],
+.dark .hover\:text-\[\#031126\]:hover { color: #ffffff; }
+.dark .text-blue-400,
+.dark .text-blue-300,
+.dark .text-sky-400 { color: var(--mn-accent-text); }
+.dark .bg-blue-500,
+.dark .bg-blue-600 { background-color: var(--mn-accent); }
+
+/* Component restyles sit in the components layer (with higher specificity than the base
+   theme), so per-element Tailwind utilities still win over them. */
+@layer components {
+  /* ── Surfaces ── */
+  .dark .bg-gp-surface-base { background-color: var(--mn-page); }
+  .dark .bg-gp-surface-card { background-color: var(--mn-surface); }
+  .dark .bg-gp-surface-elevated { background-color: var(--mn-surface-2); }
+  .dark .bg-gp-surface-input { background-color: var(--mn-input); }
+  .dark .bg-gp-surface-overlay { background-color: #0a0920; }
+
+  /* ── Cards, tables, modals ── */
+  .dark .gp-app-card[data-ods='card'] {
+    background: var(--mn-surface);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius);
+    box-shadow: none;
+    color: var(--mn-text);
+  }
+
+  .dark [class*='shadow-[0_4px_'] {
+    --tw-shadow: 0 1px 2px rgba(5, 4, 20, 0.35);
+  }
+
+  .dark .gp-app-table[data-ods='table'] {
+    --ods-table-border-color: var(--mn-border);
+    --ods-table-striped-background-color: rgba(255, 255, 255, 0.015);
+    color: var(--mn-text);
+  }
+
+  .dark .gp-app-table[data-ods='table'] th,
+  .dark .gp-app-table[data-ods='table'] thead tr th {
+    color: var(--mn-faint);
+    border-color: var(--mn-border);
+    font-weight: 600;
+  }
+
+  .dark .gp-app-table[data-ods='table'] tbody tr td,
+  .dark .gp-app-table[data-ods='table'] tbody tr th {
+    border-color: var(--mn-border);
+    color: var(--mn-text);
+  }
+
+  .dark .gp-app-table[data-ods='table'] tr:hover {
+    background: var(--mn-accent-softer);
+  }
+
+  .dark .gp-app-modal-content[data-ods='modal-content'] {
+    background: var(--mn-surface);
+    border: 1px solid var(--mn-border-strong);
+    color: var(--mn-text);
+  }
+
+  /* ── Buttons ── */
+  .dark .gp-app-button--neutral[data-ods='button'] {
+    background: var(--mn-surface-2);
+    border-color: var(--mn-border-strong);
+    color: var(--mn-text);
+  }
+
+  .dark .gp-app-button--neutral[data-ods='button']:hover {
+    background: var(--mn-surface-3);
+    border-color: var(--mn-accent);
+    color: #ffffff;
+  }
+
+  .dark .gp-app-button--critical[data-ods='button'] {
+    background: var(--mn-danger);
+    border-color: var(--mn-danger);
+  }
+
+  .dark .gp-app-button--critical[data-ods='button']:hover {
+    background: var(--mn-danger-hover);
+    border-color: var(--mn-danger-hover);
+  }
+
+  .dark .gp-app-button--ghost[data-ods='button'] {
+    color: var(--mn-muted);
+  }
+
+  /* ── Badges ── */
+  .dark .gp-app-badge--07[data-ods='badge'],
+  .dark .gp-status-badge--starting[data-ods='badge'],
+  .dark .gp-status-badge--restarting[data-ods='badge'],
+  .dark .gp-status-badge--info[data-ods='badge'] {
+    background: var(--mn-accent-soft);
+    color: var(--mn-accent-text);
+  }
+
+  /* ── Inputs, selects, comboboxes ── */
+  .dark .gp-app-input[data-ods='input'],
+  .dark .gp-app-textarea[data-ods='textarea'],
+  .dark .gp-app-select-control[data-ods='select-control'],
+  .dark .gp-app-combobox-control[data-ods='combobox-control'] {
+    background: var(--mn-input);
+    border-color: var(--mn-border-strong);
+    color: var(--mn-heading);
+  }
+
+  .dark .gp-resources-select[data-ods='select'] .gp-app-select-control[data-ods='select-control'] {
+    background: var(--mn-input);
+    border-color: var(--mn-border-strong);
+  }
+
+  .dark .gp-game-config-select[data-ods='select'] .gp-app-select-control[data-ods='select-control'],
+  .dark .gp-game-config-combobox .gp-app-combobox-control[data-ods='combobox-control'] {
+    background: var(--mn-input);
+    border-color: var(--mn-border-strong);
+    box-shadow: none;
+  }
+
+  .dark .gp-game-config-select[data-ods='select'] .gp-app-select-control[data-ods='select-control']:hover,
+  .dark .gp-game-config-combobox .gp-app-combobox-control[data-ods='combobox-control']:hover {
+    border-color: #4b4a8c;
+  }
+
+  .dark .gp-game-config-input,
+  .dark .gp-game-config-combobox {
+    --gp-autofill-surface: var(--mn-input);
+  }
+
+  .dark .gp-app-select[data-ods='select'] [data-ods='select-content'],
+  .dark .gp-game-config-select[data-ods='select'] [data-ods='select-content'],
+  .dark .gp-app-combobox[data-ods='combobox'] [data-ods='combobox-content'] {
+    background: var(--mn-surface);
+    border-color: var(--mn-border-strong);
+    box-shadow: 0 16px 40px rgba(5, 4, 20, 0.55);
+  }
+
+  .dark .gp-app-select[data-ods='select'] [data-ods='select-content'] [role='option'][data-highlighted] {
+    background: var(--mn-surface-2);
+  }
+
+  .dark .gp-app-toggle-control[data-ods='toggle-control'] {
+    --ods-toggle-control-background-color: var(--mn-surface-3);
+    --ods-toggle-control-background-color-hover: #33326b;
+    --ods-toggle-control-border-color: var(--mn-border-strong);
+    --ods-toggle-control-border-color-hover: #4b4a8c;
+  }
+
+  .dark .gp-app-toggle-label[data-ods='toggle-label'] {
+    color: var(--mn-text);
+  }
+
+  .dark .gp-game-config-range::-webkit-slider-thumb { border-color: var(--mn-surface); }
+  .dark .gp-game-config-range::-moz-range-thumb { border-color: var(--mn-surface); }
+
+}
+
+/* These deliberately override the utility classes on each element. */
+/* Power actions read as solid green / grey / red tiles. */
+.dark .gp-btn-power[data-ods='button'].bg-green-600\/10 {
+  background: var(--mn-success);
+  border-color: var(--mn-success);
+  color: #ffffff;
+}
+.dark .gp-btn-power[data-ods='button'].bg-green-600\/10:hover:not([disabled]) {
+  background: var(--mn-success-hover);
+  border-color: var(--mn-success-hover);
+}
+.dark .gp-btn-power[data-ods='button'].bg-red-600\/10 {
+  background: var(--mn-danger);
+  border-color: var(--mn-danger);
+  color: #ffffff;
+}
+.dark .gp-btn-power[data-ods='button'].bg-red-600\/10:hover:not([disabled]) {
+  background: var(--mn-danger-hover);
+  border-color: var(--mn-danger-hover);
+}
+.dark .gp-btn-power[data-ods='button'].bg-orange-600\/10 {
+  background: var(--mn-surface-3);
+  border-color: var(--mn-border-strong);
+  color: var(--mn-heading);
+}
+.dark .gp-btn-power[data-ods='button'].bg-orange-600\/10:hover:not([disabled]) {
+  background: #313068;
+  border-color: var(--mn-accent);
+}
+.dark .gp-btn-power[data-ods='button'] :is(svg, span) {
+  color: inherit !important;
+}
+.dark .gp-btn-power[data-ods='button'][disabled] {
+  opacity: 0.45;
+}
+
+.dark .gp-btn-delete[data-ods='button'].bg-red-600 {
+  background: rgba(185, 56, 63, 0.14);
+  border: 1px solid rgba(185, 56, 63, 0.45);
+  color: #f0a3a7;
+}
+.dark .gp-btn-delete[data-ods='button'].bg-red-600:hover {
+  background: var(--mn-danger);
+  border-color: var(--mn-danger);
+  color: #ffffff;
+}
+
+/* ── Console ── */
+.dark .gp-console-terminal.bg-black {
+  background-color: var(--mn-terminal);
+}
+
+.dark .gp-console-panel {
+  border: 1px solid var(--mn-border);
+  border-radius: var(--mn-radius);
+}
+
+/* ── Scrollbars ── */
+.dark *::-webkit-scrollbar-thumb {
+  background-color: #34336b;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #45448a;
+}
+
+.dark * {
+  scrollbar-color: #34336b transparent;
+}
+
+/* ── Announcement bar (news) ── */
+.dark .gp-news-panel[data-ods='card'] {
+  border-left: 3px solid var(--mn-accent);
+  background: linear-gradient(90deg, rgba(91, 79, 240, 0.16) 0%, rgba(24, 23, 58, 0.9) 45%, var(--mn-surface) 100%);
+}
+
+/* Status pill sitting on a grid card's banner art: give it a solid backing. */
+[role='listitem']:has(> .gp-server-banner) .gp-status-badge[data-ods='button'] {
+  background-color: rgba(12, 11, 34, 0.78);
+}
+
+html:not(.dark) .gp-game-servers-grid [role='listitem']:has(> .gp-server-banner) .gp-status-badge[data-ods='button'] {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+}
+
+/* Console output in a monospace face, like a real terminal. */
+.dark .gp-console-terminal {
+  font-family: ui-monospace, 'JetBrains Mono', 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}

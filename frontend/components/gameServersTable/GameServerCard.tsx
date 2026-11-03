@@ -23,6 +23,7 @@ import {
 } from '../../utils/serverRuntime';
 import { canOpenServerSettings, formatNetworkSpeed, formatPlayerCount, hasServerPermission, playersHaveNames, type MetricType } from './utils';
 import { getServerStatusPresentation } from './utils';
+import { ServerBanner } from './ServerBanner';
 import { ODS_CHART_THEME } from '../charts/theme';
 import { AppButton } from '../../src/ui/components';
 
@@ -131,8 +132,9 @@ export function GameServerCard({
       }`}
       role="listitem"
     >
+      {isGrid && <ServerBanner gameKey={server.catalogId || server.game} gameLabel={getGameLabel(server)} />}
       <div className="flex items-start justify-between mb-3">
-        <div className={`min-w-0 flex-1 ${editingId === server.id ? '' : 'pr-32'}`}>
+        <div className={`min-w-0 flex-1 ${editingId === server.id || isGrid ? '' : 'pr-32'}`}>
           {editingId === server.id ? (
             <div className="flex items-center gap-2">
               <input
@@ -236,7 +238,7 @@ export function GameServerCard({
                   ? 'Open history logs'
                   : 'Missing permission: container.logs.read'
             }
-            className={`gp-status-badge absolute right-4 top-4 inline-flex w-28 items-center justify-center rounded-full border px-2 py-1 text-center text-sm font-semibold leading-none tracking-[0.04em] [text-indent:0.04em] whitespace-nowrap transition-colors ${statusClassName} ${
+            className={`gp-status-badge absolute right-4 top-4 inline-flex w-28 ${isGrid ? 'backdrop-blur-sm' : ''} items-center justify-center rounded-full border px-2 py-1 text-center text-sm font-semibold leading-none tracking-[0.04em] [text-indent:0.04em] whitespace-nowrap transition-colors ${statusClassName} ${
               canReadLogs ? 'hover:brightness-110' : 'opacity-60 cursor-not-allowed'
             }`}
           >

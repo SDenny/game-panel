@@ -171,7 +171,7 @@ export function NewsPanel() {
 
   return (
     <AppCard
-      className="w-full overflow-hidden rounded-lg border border-gray-800 shadow-[0_4px_20px_rgba(2,6,23,0.5),0_1px_4px_rgba(2,6,23,0.25)]"
+      className="gp-news-panel w-full overflow-hidden rounded-lg border border-gray-800 shadow-[0_4px_20px_rgba(2,6,23,0.5),0_1px_4px_rgba(2,6,23,0.25)]"
       role="region"
       aria-label="News carousel"
       aria-roledescription="carousel"
